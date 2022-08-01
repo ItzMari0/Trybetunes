@@ -30,8 +30,7 @@ class Login extends Component {
     const { username } = this.state;
     this.setState({ loading: false });
     await createUser({ name: username });
-    this.setState({ loading: true });
-    this.setState({ redirect: true });
+    this.setState({ loading: true, redirect: true });
   }
 
   render() {
