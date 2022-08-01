@@ -4,9 +4,13 @@ import { getUser } from '../services/userAPI';
 import Loading from '../pages/Loading';
 
 class Header extends Component {
-  state = {
-    username: '',
-    loading: true,
+  constructor() {
+    super();
+
+    this.state = {
+      username: '',
+      loading: true,
+    };
   }
 
   componentDidMount() {
