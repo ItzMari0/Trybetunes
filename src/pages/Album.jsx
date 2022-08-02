@@ -30,7 +30,7 @@ class Album extends Component {
 
   render() {
     const { musicList, loading } = this.state;
-    const filterList = musicList.filter((music) => music.kind === 'song');
+    const favoriteList = musicList.filter((_music, index) => index > 0);
     return (
       <div data-testid="page-album">
         <Header />
@@ -47,17 +47,9 @@ class Album extends Component {
               <p data-testid="album-name">{ musicList[0].collectionName }</p>
             </div>
             <div>
-              { filterList.map((music) => {
-                const { trackName, trackId, previewUrl } = music;
-                return (
-                  <MusicCard
-                    key={ trackId }
-                    trackName={ trackName }
-                    previewUrl={ previewUrl }
-                    trackId={ trackId }
-                  />
-                );
-              })}
+              <MusicCard
+                obj={ favoriteList }
+              />
             </div>
           </div>
         )}
