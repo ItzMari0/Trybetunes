@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Header from '../components/Header';
+import searchAlbumsAPI from '../services/searchAlbumsAPI';
 
-const ALBUMCHARACTERS = 2;
+const SEARCHCHARACTERS = 2;
 
 class Search extends Component {
   constructor() {
@@ -9,18 +10,30 @@ class Search extends Component {
 
     this.state = {
       isSearchButtonDisabled: true,
+      search: '',
+      loading: false,
+      albums: [],
     };
   }
 
   onInputSearch = ({ target }) => {
     const { value } = target;
-    if (value.length >= ALBUMCHARACTERS) {
+    this.setState({ search: value });
+    if (value.length >= SEARCHCHARACTERS) {
       this.setState({ isSearchButtonDisabled: false });
     }
   };
 
+  onSearchButtonClick = () => {
+    const { search } = this.state;
+    this.setState({ loading: true }, async () => {
+      const albums = await searchAlbumsAPI(search);
+      this.setState({ albums, search: '', loading: false });
+    });
+  }
+
   render() {
-    const { isSearchButtonDisabled } = this.state;
+    const { isSearchButtonDisabled, loading, search, albums } = this.state;
     return (
       <div data-testid="page-search">
         <Header />
@@ -35,6 +48,7 @@ class Search extends Component {
               type="button"
               data-testid="search-artist-button"
               disabled={ isSearchButtonDisabled }
+              onClick={ this.onSearchButtonClick }
             >
               Pesquisar
             </button>
