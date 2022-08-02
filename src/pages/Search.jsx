@@ -1,39 +1,40 @@
 import React, { Component } from 'react';
 import Header from '../components/Header';
-import searchAlbumsAPI from '../services/searchAlbumsAPI';
+// import searchAlbumsAPI from '../services/searchAlbumsAPI';
 
-const SEARCHCHARACTERS = 2;
+// const SEARCHCHARACTERS = 2;
 
 class Search extends Component {
-  constructor() {
-    super();
+  // constructor() {
+  //   super();
 
-    this.state = {
-      isSearchButtonDisabled: true,
-      search: '',
-      loading: false,
-      albums: [],
-    };
-  }
+  //   this.state = {
+  //     isSearchButtonDisabled: true,
+  //     search: '',
+  //     loading: false,
+  //     albums: [],
+  //   };
+  // }
 
-  onInputSearch = ({ target }) => {
-    const { value } = target;
-    this.setState({ search: value });
-    if (value.length >= SEARCHCHARACTERS) {
-      this.setState({ isSearchButtonDisabled: false });
-    }
-  };
+  // onInputSearch = ({ target }) => {
+  //   const { value } = target;
+  //   this.setState({ search: value });
+  //   if (value.length >= SEARCHCHARACTERS) {
+  //     this.setState({ isSearchButtonDisabled: false });
+  //   }
+  // };
 
-  onSearchButtonClick = () => {
-    const { search } = this.state;
-    this.setState({ loading: true }, async () => {
-      const albums = await searchAlbumsAPI(search);
-      this.setState({ albums, search: '', loading: false });
-    });
-  }
+  // onSearchButtonClick = () => {
+  //   const { search } = this.state;
+  //   this.setState({ loading: true }, async () => {
+  // const albums = await searchAlbumsAPI(search);
+  // this.setState({ albums, search: '', loading: false });
+  //   });
+  // }
 
   render() {
-    const { isSearchButtonDisabled, loading, search, albums } = this.state;
+    const { isSearchButtonDisabled } = this.state;
+    // , loading, search, albums
     return (
       <div data-testid="page-search">
         <Header />
