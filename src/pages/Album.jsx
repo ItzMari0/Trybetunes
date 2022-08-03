@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
@@ -35,13 +35,23 @@ class Album extends Component {
     });
   }
 
-  favoriteFunction = async (obj) => {
+  favoriteFunction = async (event, obj) => {
+    const { target } = event;
     const { favoriteSong } = this.state;
-    this.setState({ loading: true });
-    await addSong(obj);
-    this.setState({
-      loading: false,
-      favoriteSong: [...favoriteSong, obj.trackId],
+    this.setState({ loading: true }, async () => {
+      if (target.checked) {
+        await addSong(obj);
+        this.setState({
+          loading: false,
+          favoriteSong: [...favoriteSong, obj.trackId],
+        });
+      } else {
+        await removeSong(obj);
+        this.setState({
+          loading: false,
+          favoriteSong: favoriteSong.filter((song) => song !== obj.trackId),
+        });
+      }
     });
   }
 

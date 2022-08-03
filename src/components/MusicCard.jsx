@@ -28,7 +28,7 @@ class MusicCard extends Component {
               name="favorite"
               id="favorite"
               checked={ checked }
-              onChange={ () => favoriteFunction(musicObj) }
+              onChange={ (event) => favoriteFunction(event, musicObj) }
               data-testid={ `checkbox-music-${trackId}` }
             />
           </label>
