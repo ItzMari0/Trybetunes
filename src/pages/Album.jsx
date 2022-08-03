@@ -4,56 +4,92 @@ import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
     super();
-
     this.state = {
-      loading: true,
-      musicList: [],
+      musicAlbum: [],
+      musicInfo: {},
+      loading: false,
+      favoriteSong: [],
     };
   }
 
-  componentDidMount = () => {
-    this.musicFunction();
+  componentDidMount() {
+    const { match: { params: { id } } } = this.props;
+    this.musicFunction(id);
+    this.getFromFavorite();
   }
 
-  musicFunction = async () => {
-    const { match: { params: { id } } } = this.props;
-    const music = await getMusics(id);
+  musicFunction = async (id) => {
+    this.setState({ loading: true });
+    const musicResult = await getMusics(id);
+    const { musicAlbum } = this.state;
+    musicResult.forEach((result, i) => ((i === 0)
+      ? this.musicInformation(result)
+      : musicAlbum.push(result)));
     this.setState({
-      musicList: music,
       loading: false,
     });
   }
 
+  favoriteFunction = async (obj) => {
+    const { favoriteSong } = this.state;
+    this.setState({ loading: true });
+    await addSong(obj);
+    this.setState({
+      loading: false,
+      favoriteSong: [...favoriteSong, obj.trackId],
+    });
+  }
+
+  getFromFavorite = async () => {
+    const { favoriteSong } = this.state;
+    this.setState({ loading: true });
+    const result = await getFavoriteSongs();
+    this.setState({
+      loading: false,
+      favoriteSong: [...favoriteSong, ...result.map((song) => song.trackId)],
+    });
+  }
+
+  musicInformation = (info) => {
+    this.setState({
+      musicInfo: info,
+    }, () => {
+      this.setState({ loading: false });
+    });
+  }
+
   render() {
-    const { musicList, loading } = this.state;
-    const favoriteList = musicList.filter((_music, index) => index > 0);
+    const { musicInfo, musicAlbum, loading, favoriteSong } = this.state;
     return (
-      <div data-testid="page-album">
+      <>
         <Header />
-        { loading ? (
-          <Loading />
-        ) : (
-          <div>
-            <div>
-              <img
-                src={ musicList[0].artworkUrl100 }
-                alt={ musicList[0].collectionName }
-              />
-              <p data-testid="artist-name">{ musicList[0].artistName }</p>
-              <p data-testid="album-name">{ musicList[0].collectionName }</p>
-            </div>
-            <div>
-              <MusicCard
-                obj={ favoriteList }
-              />
-            </div>
-          </div>
-        )}
-      </div>
+        <div data-testid="page-album">
+          { loading ? <Loading />
+            : (
+              <>
+                <h2 data-testid="artist-name">{musicInfo.artistName}</h2>
+                <h4 data-testid="album-name">{musicInfo.collectionName}</h4>
+                <div>
+                  {musicAlbum.map((song) => (
+                    <MusicCard
+                      previewUrl={ song.previewUrl }
+                      trackName={ song.trackName }
+                      trackId={ song.trackId }
+                      checked={ favoriteSong.some((favSong) => song.trackId === favSong) }
+                      favoriteFunction={ this.favoriteFunction }
+                      musicObj={ song }
+                      key={ song.trackNumber }
+                    />))}
+                </div>
+              </>
+            )}
+        </div>
+      </>
     );
   }
 }
@@ -61,9 +97,7 @@ class Album extends Component {
 export default Album;
 
 Album.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
+  match: PropTypes.objectOf(PropTypes.string).isRequired,
+  params: PropTypes.objectOf(PropTypes.string).isRequired,
+  id: PropTypes.string.isRequired,
 };
